@@ -343,7 +343,7 @@ plot_or_save_results(
     df = time_steps_simulation_results_df,
     plot_type = 'X',
     action = 'plot',
-    filename = 'python_simulation_results.png'
+    filename = 'simulations_results/python_simulation_results.png'
 )
 
 time_steps_simulation_results_df.to_csv(
