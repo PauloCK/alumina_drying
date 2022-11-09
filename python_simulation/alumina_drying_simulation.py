@@ -42,7 +42,7 @@ def upward_drying(t, Y):
         Pab.append((28.97 / 18*W[i]) / (1+28.97 / 18*W[i]) * (695.1 / 760))
         Psat.append(np.exp(18.3036 - 3816.44 / (Tm[i] + 227.02)) / 760)
         UR.append(Pab[i] / Psat[i])
-        # Isoterma de equilibrio para a alumina à 50°C 
+        # Equilibrium isotherm for alumina at 50°C
         c_iso = 1.39796669; 
         k_iso = 0.14982732; 
         mo_iso = 1.148646602; 
@@ -50,15 +50,15 @@ def upward_drying(t, Y):
         Meq_40.append(mo_iso * c_iso * k_iso * UR[i] / ((1 - k_iso * UR[i])*(1 - k_iso * UR[i] + k_iso * c_iso * UR[i])))
         Meq_50.append((Meq_40[i] + Meq_60[i]) / 2) 
         Meq.append(Meq_60[i])
-        Rho.append(Rhoo) # Rho real 
-        Ep.append(Epsilon) # Porosidade vs M/M0 
-        Ko = 1.124342559 # Constante de secagem - Modelo de Lewis 
-        K.append(Ko * np.exp(-2129.52871 / (Tm[i] + 273.15))) # constante de secagem - Modelo de Lewis 
+        Rho.append(Rhoo)
+        Ep.append(Epsilon)
+        Ko = 1.124342559
+        K.append(Ko * np.exp(-2129.52871 / (Tm[i] + 273.15)))
         dMdt.append(-K[i] * (M[i] - Meq[i])) 
         f.append(-(1 - Ep[i]) * Rho[i] * dMdt[i]) 
-        dY[i] = dMdt[i] # Balanço de massa para a fase sólida 
-        dY[i+N] = (f[i] - (Gf * dWdy[i]) / (Ep[i] * Rhof)) # Balanço de massa para a fase fluida 
-        dY[i+2*N] = (-f[i] * (_lambda) - (Gf * (Cpf + W[i] * Cpv) * dTmdy[i])) / (((1 - Ep[i]) * Rho[i] * (Cps + M[i] * Cpl)) + (Ep[i] * Rhof * (Cpf + W[i]))) # balanço de energia para a mistura
+        dY[i] = dMdt[i] # Mass balance for the solid phase
+        dY[i+N] = (f[i] - (Gf * dWdy[i]) / (Ep[i] * Rhof)) # Mass balance for the fluid phase
+        dY[i+2*N] = (-f[i] * (_lambda) - (Gf * (Cpf + W[i] * Cpv) * dTmdy[i])) / (((1 - Ep[i]) * Rho[i] * (Cps + M[i] * Cpl)) + (Ep[i] * Rhof * (Cpf + W[i]))) # Energy balance for the mixture
     return dY
 
 def downard_drying(t, Y):
@@ -80,7 +80,7 @@ def downard_drying(t, Y):
         Pab = (28.97 / 18*W) / (1+28.97 / 18*W) * (695.1 / 760)
         Psat = (np.exp(18.3036 - 3816.44 / (Tm + 227.02)) / 760)
         UR = Pab / Psat
-        # Isoterma de equilibrio para a alumina à 50°C 
+        # Equilibrium isotherm for alumina at 50°C 
         c_iso = 1.39796669
         k_iso = 0.14982732 
         mo_iso = 1.148646602 
@@ -88,26 +88,67 @@ def downard_drying(t, Y):
         Meq_40 = mo_iso * c_iso * k_iso * UR / ((1 - k_iso * UR)*(1 - k_iso * UR + k_iso * c_iso * UR))
         Meq_50 = (Meq_40 + Meq_60) / 2
         Meq = Meq_60
-        Rho = Rhoo # Rho real 
-        Ep = Epsilon # Porosidade vs M/M0 
-        Ko = 1.124342559 # Constante de secagem - Modelo de Lewis 
-        K = Ko * np.exp(-2129.52871 / (Tm + 273.15)) # Constante de secagem - Modelo de Lewis 
+        Rho = Rhoo 
+        Ep = Epsilon 
+        Ko = 1.124342559
+        K = Ko * np.exp(-2129.52871 / (Tm + 273.15))
         dMdt = -K * (M - Meq)
         f = -(1 - Ep) * Rho * dMdt
-        dY[i] = dMdt # Balanço de massa para a fase sólida 
-        dY[i+N] = (f - (Gf * dWdy) / (Ep * Rhof)) # Balanço de massa para a fase fluida 
-        dY[i+2*N] = (-f * (_lambda) - (Gf * (Cpf + W * Cpv) * dTmdy)) / (((1 - Ep) * Rho * (Cps + M * Cpl)) + (Ep * Rhof * (Cpf + W))) # balanço de energia para a mistura
+        dY[i] = dMdt # Mass balance for the solid phase
+        dY[i+N] = (f - (Gf * dWdy) / (Ep * Rhof)) # Mass balance for the fluid phase
+        dY[i+2*N] = (-f * (_lambda) - (Gf * (Cpf + W * Cpv) * dTmdy)) / (((1 - Ep) * Rho * (Cps + M * Cpl)) + (Ep * Rhof * (Cpf + W))) # Energy balance for the mixture
 
         last_W = W
         last_Tm = Tm
     return dY
+
+def create_df_from_simulation_results(df):
+    return pd.DataFrame(
+        data = df,
+        columns = [
+            'Tempo_min',
+            'X_0cm', 
+            'X_1cm', 
+            'X_2cm', 
+            'X_3cm', 
+            'X_4cm', 
+            'X_5cm', 
+            'X_6cm', 
+            'X_7cm', 
+            'X_8cm', 
+            'X_9cm', 
+            'X_10cm', 
+            'H_0cm', 
+            'H_1cm',
+            'H_2cm',
+            'H_3cm',
+            'H_4cm',
+            'H_5cm',
+            'H_6cm',
+            'H_7cm',
+            'H_8cm',
+            'H_9cm',
+            'H_10cm',
+            'T_0cm',
+            'T_1cm',
+            'T_2cm',
+            'T_3cm',
+            'T_4cm',
+            'T_5cm',
+            'T_6cm',
+            'T_7cm',
+            'T_8cm',
+            'T_9cm',
+            'T_10cm'
+        ]
+    )
 
 def plot_or_save_results(df, plot_type, filename, action = 'plot'):
     plot_title = 'Umidade da alumina em função do tempo'
     yaxis_title = 'Umidade da partícula em base seca [kg água/kg sólido seco]'
     legend_x_position = .83
     legend_y_position = 1
-    if plot_type == 'Tm':
+    if plot_type == 'T':
         plot_title = 'Temperatura da mistura em função do tempo'
         yaxis_title = 'Temperatura da mistura [°C]'
         legend_x_position = .81
@@ -116,8 +157,8 @@ def plot_or_save_results(df, plot_type, filename, action = 'plot'):
     fig = go.Figure(
         data = [
             go.Scatter(
-                x = df['Tempo [minutos]'],
-                y = df[f'{plot_type}(1cm)'],
+                x = df['Tempo_min'],
+                y = df[f'{plot_type}_1cm'],
                 name = f'{plot_type}(1cm)',
                 marker = {
                     'color': plots_series_colors['1'],
@@ -127,8 +168,8 @@ def plot_or_save_results(df, plot_type, filename, action = 'plot'):
                 },
             ),
             go.Scatter(
-                x = df['Tempo [minutos]'],
-                y = df[f'{plot_type}(5cm)'],
+                x = df['Tempo_min'],
+                y = df[f'{plot_type}_5cm'],
                 name = f'{plot_type}(5cm)',
                 marker = {
                     'color': plots_series_colors['5'],
@@ -138,8 +179,8 @@ def plot_or_save_results(df, plot_type, filename, action = 'plot'):
                 },
             ),
             go.Scatter(
-                x = df['Tempo [minutos]'],
-                y = df[f'{plot_type}(10cm)'],
+                x = df['Tempo_min'],
+                y = df[f'{plot_type}_10cm'],
                 name = f'{plot_type}(10cm)',
                 marker = {
                     'color': plots_series_colors['10'],
@@ -195,7 +236,7 @@ def plot_or_save_results(df, plot_type, filename, action = 'plot'):
         tick0 = 0,
         dtick = .05
     )
-    if plot_type == 'Tm':
+    if plot_type == 'T':
         fig.update_yaxes(
             tickmode = 'linear',
             tick0 = 20,
@@ -295,52 +336,17 @@ for i in range(N):
     time_steps.extend(t_eval)
 
 time_steps = [t/60 for t in time_steps] # Time steps values in minutes
-simulation_results_df = pd.DataFrame(
-    data = simulation_results,
-    columns = [
-        'X(0cm)', 
-        'X(1cm)', 
-        'X(2cm)', 
-        'X(3cm)', 
-        'X(4cm)', 
-        'X(5cm)', 
-        'X(6cm)', 
-        'X(7cm)', 
-        'X(8cm)', 
-        'X(9cm)', 
-        'X(10cm)', 
-        'H(0cm)', 
-        'H(1cm)',
-        'H(2cm)',
-        'H(3cm)',
-        'H(4cm)',
-        'H(5cm)',
-        'H(6cm)',
-        'H(7cm)',
-        'H(8cm)',
-        'H(9cm)',
-        'H(10cm)',
-        'Tm(0cm)',
-        'Tm(1cm)',
-        'Tm(2cm)',
-        'Tm(3cm)',
-        'Tm(4cm)',
-        'Tm(5cm)',
-        'Tm(6cm)',
-        'Tm(7cm)',
-        'Tm(8cm)',
-        'Tm(9cm)',
-        'Tm(10cm)'
-    ]
-)
-time_steps_df = pd.DataFrame(
-    data = time_steps,
-    columns = ['Tempo [minutos]']
-)
+time_steps_simulation_results = np.hstack((np.asarray(time_steps).reshape(len(time_steps),1),simulation_results))
+time_steps_simulation_results_df = create_df_from_simulation_results(time_steps_simulation_results)
 
 plot_or_save_results(
-    df = pd.concat([time_steps_df, simulation_results_df], axis = 1),
-    plot_type = 'Tm',
+    df = time_steps_simulation_results_df,
+    plot_type = 'X',
     action = 'plot',
     filename = 'python_simulation_results.png'
+)
+
+time_steps_simulation_results_df.to_csv(
+    'simulation_results_python.csv',
+    index=False
 )
