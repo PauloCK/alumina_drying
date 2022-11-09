@@ -347,6 +347,6 @@ plot_or_save_results(
 )
 
 time_steps_simulation_results_df.to_csv(
-    'simulation_results_python.csv',
+    'simulations_results/simulation_results_python.csv',
     index=False
 )
