@@ -258,15 +258,15 @@ plots_series_colors = {
 
 # Model parameters 
 Epsilon = 0.4 # Porosity of the bed
-Rhoo = 1.69 # Alumina specific mass (g/cm**3) 
-Cpf = 0.25 # Dry air specific heat (cal/g.°C) 
-Cpv = 0.28 # Water vapor air specific heat (cal/g.°C) 
-Cps = 0.199914 # Solid specific heat (cal/g.°C) 
-Cpl = 1.0 # Liquid water specific heat (cal/g.°C) 
-_lambda = 573 # Latent heat of water vaporization (cal/g) 
-bed_height = 10.0 # Bed height (cm) 
-m = 0.390 # Mass flow rate of air (kg/min) 
-D = 10.0 # Bed diameter (cm) 
+Rhoo = 1.69 # Alumina specific mass 
+Cpf = 0.25 # Dry air specific heat
+Cpv = 0.28 # Water vapor specific heat
+Cps = 0.199914 # Solid specific heat
+Cpl = 1.0 # Liquid water specific heat
+_lambda = 573 # Latent heat of water vaporization
+bed_height = 10.0 # Bed height
+m = 0.390 # Mass flow rate of air
+D = 10.0 # Bed diameter
 
 # Air reversal parameters
 t0rev = 10*60 # Time when the first airflow reversal happens
@@ -282,17 +282,17 @@ hy = hyaux[1] - hyaux[0]
 Ufo = 0.016 # Initial air humidity
 Uso = 0.45 # Initial alumina humidity
 Tfo = 60.0 # Initial bed temperature
-Tf0ac = Tfo # Initial inlet temperature of the upward flow [°C] 
-Tf0des = Tfo # Initial inlet temperature of the downward flow [°C] 
-Tmo = 20.8 # Initial bed temperature, mixture of fluid and solid phases [°C] 
+Tf0ac = Tfo # Initial inlet temperature of the upward flow
+Tf0des = Tfo # Initial inlet temperature of the downward flow
+Tmo = 20.8 # Initial mixture of fluid and solid phases temperature
 
 W0 = Ufo
 M0 = Uso 
-Rhof = (0.0012*293.15 / (Tfo+273.15)) * (1 / (1+Ufo)) # Fluid density (g/cm**3) 
-Gf = m*1000 / (60*np.pi*(D**2) / 4) # Mass flux of the fluid phase [g/cm**2.s]
-t0 = 0.001 # Initial drying time (s)
-delt = 20 # Simulation time step (s)
-tf = t0rev # Final drying time (s)
+Rhof = (0.0012*293.15 / (Tfo+273.15)) * (1 / (1+Ufo)) # Fluid density
+Gf = m*1000 / (60*np.pi*(D**2) / 4) # Mass flux of the fluid phase
+t0 = 0.001 # Initial drying time
+delt = 20 # Simulation time step
+tf = t0rev # Final drying time
 
 y0 = np.array([Uso*np.ones(N), Ufo*np.ones(N), Tmo*np.ones(N)]).flatten() # Simulation initial state
 simulation_results = y0.reshape((1, len(y0))) # Array that stores the results of the simulation
@@ -331,7 +331,7 @@ for i in range(N):
         y0 = Y.y[:,-1]
         t0 = tf
         tf = tf + deltrev
-    
+     
     simulation_results = np.append(simulation_results, np.transpose(Y.y), axis = 0)
     time_steps.extend(t_eval)
 
@@ -343,7 +343,7 @@ plot_or_save_results(
     df = time_steps_simulation_results_df,
     plot_type = 'X',
     action = 'plot',
-    filename = 'simulations_results/python_simulation_results.png'
+    filename = 'python_simulation_results.png'
 )
 
 time_steps_simulation_results_df.to_csv(
